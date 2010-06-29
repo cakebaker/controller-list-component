@@ -12,8 +12,7 @@ class ControllerListComponent extends Object {
 
         foreach($controllerClasses as $controller) {
             if ($controller != 'App') {
-                $fileName = Inflector::underscore($controller).'_controller.php';
-                require_once(CONTROLLERS.$fileName);
+                App::import('Controller', $controller);
                 $className = $controller . 'Controller';
                 $actions = get_class_methods($className);
 
