@@ -1,0 +1,3 @@
+A simple CakePHP component which returns a list of controllers plus the corresponding action names.
+
+Usage: Add "ControllerList" to the $components array of your controller and call $this->ControllerList->get() in your action.
