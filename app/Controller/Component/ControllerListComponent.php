@@ -22,7 +22,7 @@ class ControllerListComponent extends Component {
 			}
 		}
 	
-		debug( $controllers );
+		return $controllers;
 	}
 }
 ?>
