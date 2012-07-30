@@ -10,7 +10,10 @@ class ControllerListComponent extends Component {
         $result = array();
 
         foreach($controllerClasses as $controller) {
-            $result[$controller] = $this->getActions($controller);
+            $controllerName = str_replace('Controller', '', $controller);
+            $result[$controller]['name'] = $controllerName;
+            $result[$controller]['displayName'] = Inflector::humanize(Inflector::underscore($controllerName));
+            $result[$controller]['actions'] = $this->getActions($controller);
         }
 
         return $result;
