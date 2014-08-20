@@ -1,5 +1,14 @@
 <?php
-
+/**
+ * A simple CakePHP component that returns a list of controllers.
+ *
+ * Copyright (c) by Daniel Hofstetter (daniel.hofstetter@42dh.com, http://cakebaker.42dh.com)
+ *
+ * Licensed under The MIT License
+ * Redistributions of files must retain the above copyright notice.
+ *
+ * @license http://www.opensource.org/licenses/mit-license.php The MIT License
+ */
 class ControllerListComponent extends Component {
 
     public function getList(Array $controllersToExclude = array('PagesController')) {
