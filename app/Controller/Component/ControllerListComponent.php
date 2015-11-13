@@ -38,9 +38,16 @@ class ControllerListComponent extends Component {
     }
 
     private function removeParentMethods(Array $methods) {
-        $appControllerMethods = get_class_methods('AppController');
-
-        return array_diff($methods, $appControllerMethods);
+        $parentsControllers = array (
+            'AppController',
+            //include here your others parent controllers
+        );
+        foreach($parentsControllers as $controller){
+            App::uses($controller, 'Controller');
+            $ControllerMethods = get_class_methods($controller);
+            $methods = array_diff($methods, $ControllerMethods);
+        }
+        return $methods;
     }
 
     private function removePrivateActions(Array $methods) {
