@@ -10,9 +10,12 @@ Copy the file `app/Controller/Component/ControllerListComponent.php` to the `Con
 
 ## Usage
 
-First, you have to add the component to the `$components` array of your controller(s): `public $components = array('ControllerList');`.
+First, you have to add the component to the `$components` array of your controller(s):
+```php
+public $components = array('ControllerList');
+```
 
-Then you can use the component in your action(s) with: `$this->ControllerList->getList()`. You can also specify the controllers which should be excluded from the returned list: `$this->Controller->getList(array('UsersController'))`. Please note that without this parameter, the `PagesController` is automatically excluded.
+Then you can use the component in your action(s) with: `$this->ControllerList->getList()`. You can also specify the controllers which should be excluded from the returned list: `$this->ControllerList->getList(array('UsersController'))`. Please note that without this parameter, the `PagesController` is automatically excluded.
 
 The structure of the returned array is like:
 ```php
