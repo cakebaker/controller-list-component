@@ -10,12 +10,17 @@
  * @license http://www.opensource.org/licenses/mit-license.php The MIT License
  */
 class ControllerListComponent extends Component {
+    public $parentControllers = array('AppController');
 
     public function getList(Array $controllersToExclude = array('PagesController')) {
-        $controllersToExclude[] = 'AppController';
+        foreach($this->parentControllers as $parentController) {
+            $controllersToExclude[] = $parentController;
+        }
+
         $controllerClasses = array_filter(App::objects('Controller'), function ($controller) use ($controllersToExclude) {
             return !in_array($controller, $controllersToExclude);
         });
+
         $result = array();
 
         foreach($controllerClasses as $controller) {
@@ -31,16 +36,21 @@ class ControllerListComponent extends Component {
     private function getActions($controller) {
         App::uses($controller, 'Controller');
         $methods = get_class_methods($controller);
-        $methods = $this->removeParentMethods($methods);
+        $methods = $this->removeParentMethods($controller, $methods);
         $methods = $this->removePrivateActions($methods);
 
         return $methods;
     }
 
-    private function removeParentMethods(Array $methods) {
-        $appControllerMethods = get_class_methods('AppController');
+    private function removeParentMethods($controller, Array $methods) {
+        foreach($this->parentControllers as $parentController) {
+            if (is_subclass_of($controller, $parentController)) {
+                $parentMethods = get_class_methods($parentController);
+                $methods = array_diff($methods, $parentMethods);
+            }
+        }
 
-        return array_diff($methods, $appControllerMethods);
+        return $methods;
     }
 
     private function removePrivateActions(Array $methods) {
