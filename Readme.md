@@ -15,6 +15,11 @@ First, you have to add the component to the `$components` array of your controll
 public $components = array('ControllerList');
 ```
 
+By default, the component assumes `AppController` to be the parent of your controllers. You can change this in the following way:
+```php
+public $components = array('ControllerList' => array('parentControllers' => array('ParentController')));
+```
+
 Then you can use the component in your action(s) with: `$this->ControllerList->getList()`. You can also specify the controllers which should be excluded from the returned list: `$this->ControllerList->getList(array('UsersController'))`. Please note that without this parameter, the `PagesController` is automatically excluded.
 
 The structure of the returned array is like:
@@ -42,6 +47,10 @@ array(
 ```
 
 ## Changes
+
+### v2.0.1 (2015-11-18)
+
+* Added the configuration option `parentControllers`. Thanks to [leodisarli](https://github.com/leodisarli)!
 
 ### v2.0.0 (2012-07-30)
 
