@@ -11,37 +11,40 @@
  */
 class ControllerListComponent extends Component {
     public $parentControllers = array('AppController');
-
+    public $includePlugins = false;
     public function getList(Array $controllersToExclude = array('PagesController')) {
         foreach($this->parentControllers as $parentController) {
             $controllersToExclude[] = $parentController;
         }
-
-        $controllerClasses = array_filter(App::objects('Controller'), function ($controller) use ($controllersToExclude) {
-            return !in_array($controller, $controllersToExclude);
-        });
-
-        $result = array();
-
-        foreach($controllerClasses as $controller) {
-            $controllerName = str_replace('Controller', '', $controller);
-            $result[$controller]['name'] = $controllerName;
-            $result[$controller]['displayName'] = Inflector::humanize(Inflector::underscore($controllerName));
-            $result[$controller]['actions'] = $this->getActions($controller);
+        $objects = array('Controller');
+        if ($this->includePlugins) {
+        	foreach (CakePlugin::loaded() as $plugin) {
+        		$objects[] = $plugin . ".Controller";
+        		$controllersToExclude[] = $plugin . 'AppController';
+        		App::uses($plugin . 'AppController', $plugin. '.Controller');
+        	}
         }
-
+        $result = array();
+        foreach ($objects as $obj) {
+        	$controllerClasses = array_filter(App::objects($obj), function ($controller) use ($controllersToExclude) {
+        		return !in_array($controller, $controllersToExclude);
+        	});
+	        foreach($controllerClasses as $controller) {
+	            $controllerName = str_replace('Controller', '', $controller);
+	            $result[$controller]['name'] = $controllerName;
+	            $result[$controller]['displayName'] = Inflector::humanize(Inflector::underscore($controllerName));
+	            $result[$controller]['actions'] = $this->getActions($controller, $obj);
+	        }
+        }
         return $result;
     }
-
-    private function getActions($controller) {
-        App::uses($controller, 'Controller');
+    private function getActions($controller, $obj) {
+    	App::uses($controller, $obj);
         $methods = get_class_methods($controller);
         $methods = $this->removeParentMethods($controller, $methods);
         $methods = $this->removePrivateActions($methods);
-
         return $methods;
     }
-
     private function removeParentMethods($controller, Array $methods) {
         foreach($this->parentControllers as $parentController) {
             if (is_subclass_of($controller, $parentController)) {
@@ -49,10 +52,8 @@ class ControllerListComponent extends Component {
                 $methods = array_diff($methods, $parentMethods);
             }
         }
-
         return $methods;
     }
-
     private function removePrivateActions(Array $methods) {
         return array_filter($methods, function ($method) {
             return $method{0} != '_';
