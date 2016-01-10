@@ -11,13 +11,31 @@
  */
 class ControllerListComponent extends Component {
     public $parentControllers = array('AppController');
+    public $includePlugins = false;
 
     public function getList(Array $controllersToExclude = array('PagesController')) {
         foreach($this->parentControllers as $parentController) {
             $controllersToExclude[] = $parentController;
         }
 
-        $controllerClasses = array_filter(App::objects('Controller'), function ($controller) use ($controllersToExclude) {
+        $results = array();
+        $results += $this->getControllers($controllersToExclude);
+
+        if ($this->includePlugins) {
+            foreach (CakePlugin::loaded() as $plugin) {
+                $controllersToExclude[] = $plugin . 'AppController';
+                App::uses($plugin . 'AppController', $plugin . '.Controller');
+                $results += $this->getControllers($controllersToExclude, $plugin);
+            }
+        }
+
+        return $results;
+    }
+
+    private function getControllers($controllersToExclude, $plugin = '') {
+        $pluginPrefix = $plugin == '' ? '' : $plugin . '.';
+        $package = $pluginPrefix . 'Controller';
+        $controllerClasses = array_filter(App::objects($package), function ($controller) use ($controllersToExclude) {
             return !in_array($controller, $controllersToExclude);
         });
 
@@ -25,16 +43,16 @@ class ControllerListComponent extends Component {
 
         foreach($controllerClasses as $controller) {
             $controllerName = str_replace('Controller', '', $controller);
-            $result[$controller]['name'] = $controllerName;
-            $result[$controller]['displayName'] = Inflector::humanize(Inflector::underscore($controllerName));
-            $result[$controller]['actions'] = $this->getActions($controller);
+            $result[$pluginPrefix . $controller]['name'] = $controllerName;
+            $result[$pluginPrefix . $controller]['displayName'] = Inflector::humanize(Inflector::underscore($controllerName));
+            $result[$pluginPrefix . $controller]['actions'] = $this->getActions($controller, $package);
         }
 
         return $result;
     }
 
-    private function getActions($controller) {
-        App::uses($controller, 'Controller');
+    private function getActions($controller, $package) {
+        App::uses($controller, $package);
         $methods = get_class_methods($controller);
         $methods = $this->removeParentMethods($controller, $methods);
         $methods = $this->removePrivateActions($methods);
