@@ -15,11 +15,6 @@ First, you have to add the component to the `$components` array of your controll
 public $components = array('ControllerList');
 ```
 
-By default, the component assumes `AppController` to be the parent of your controllers. You can change this in the following way:
-```php
-public $components = array('ControllerList' => array('parentControllers' => array('ParentController')));
-```
-
 Then you can use the component in your action(s) with: `$this->ControllerList->getList()`. You can also specify the controllers which should be excluded from the returned list: `$this->ControllerList->getList(array('UsersController'))`. Please note that without this parameter, the `PagesController` is automatically excluded.
 
 The structure of the returned array is like:
@@ -46,7 +41,25 @@ array(
 )
 ```
 
+### Configuration
+
+The component provides two configuration options.
+
+The first option, `includePlugins`, determines whether controllers in plugins are listed. By default, those controllers are ignored.
+```php
+public $components = array('ControllerList' => array('includePlugins' => true));
+```
+
+The second option, `parentControllers`, allows you to specify parent controllers other than `AppController`.
+```php
+public $components = array('ControllerList' => array('parentControllers' => array('ParentController')));
+```
+
 ## Changes
+
+### v2.0.2 (2016-01-11)
+
+* Added the configuration option `includePlugins`. Thanks to [Oscar](https://github.com/oscar-ol)!
 
 ### v2.0.1 (2015-11-18)
 
