@@ -4,6 +4,10 @@
 
 A simple component for CakePHP 2.x which returns a list of controllers and the corresponding action names.
 
+## Requirements
+
+Requires at least PHP 5.3.
+
 ## Installation
 
 Copy the file `app/Controller/Component/ControllerListComponent.php` to the `Controller/Component` folder of your application.
